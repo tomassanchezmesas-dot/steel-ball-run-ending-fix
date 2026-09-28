@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "Steel Ball Run Ending Fix",
-  "version": "1.2.0",
-  "description": "Reemplaza el ending de Steel Ball Run en Netflix por un edit alternativo de YouTube. Detecta por tiempo/calibración y usa un embed compatible con Referer.",
+  "version": "1.3.0",
+  "description": "Reemplaza el ending de Steel Ball Run en Netflix y te deja elegir entre A Horse With No Name o California Dreamin' de Lil Blv.",
   "permissions": [
     "storage",
     "tabs",
