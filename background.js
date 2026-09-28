@@ -1,7 +1,23 @@
-const YOUTUBE_URL = "https://www.youtube.com/watch?v=oMiX8tZqswI";
+const ENDINGS = {
+  horse: {
+    id: "oMiX8tZqswI",
+    title: "A Horse With No Name",
+    url: "https://www.youtube.com/watch?v=oMiX8tZqswI"
+  },
+  california: {
+    id: "j7J4IrIYQvY",
+    title: "California Dreamin'",
+    url: "https://www.youtube.com/watch?v=j7J4IrIYQvY"
+  }
+};
+
+function getEnding(key) {
+  return ENDINGS[key] || ENDINGS.horse;
+}
 
 const DEFAULTS = {
   enabled: true,
+  selectedEnding: "horse",
   mode: "overlay",
   requireSeriesMatch: true,
   triggerByCreditsButton: true,
@@ -28,13 +44,13 @@ const DEFAULTS = {
 chrome.runtime.onInstalled.addListener(async () => {
   const current = await chrome.storage.sync.get(null);
   const merged = {...DEFAULTS, ...current};
-  // Migración 1.0 -> 1.1: el umbral viejo de 92 s era demasiado conservador
-  // para episodios donde Netflix no muestra “Omitir créditos”.
   if (!current.detectorV11Migrated && (current.secondsBeforeEnd == null || Number(current.secondsBeforeEnd) === 92)) {
     merged.secondsBeforeEnd = 110;
   }
   merged.detectorV11Migrated = true;
   merged.embedRefererV12Migrated = true;
+  if (!ENDINGS[merged.selectedEnding]) merged.selectedEnding = "horse";
+  merged.endingChooserV13Migrated = true;
   if (current.skipOriginalEnding == null) merged.skipOriginalEnding = true;
   await chrome.storage.sync.set(merged);
 
@@ -89,10 +105,12 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     (async () => {
       const netflixTabId = sender.tab?.id;
       const settings = await chrome.storage.sync.get({
+        selectedEnding: "horse",
         autoCloseYouTubeTab: true,
         endingDurationSeconds: 91
       });
-      const yt = await chrome.tabs.create({url: YOUTUBE_URL, active: true, openerTabId: netflixTabId});
+      const ending = getEnding(msg.endingKey || settings.selectedEnding);
+      const yt = await chrome.tabs.create({url: ending.url, active: true, openerTabId: netflixTabId});
       if (settings.autoCloseYouTubeTab && yt?.id && netflixTabId) {
         const when = Date.now() + Math.max(15, Number(settings.endingDurationSeconds) || 91) * 1000;
         const alarmName = `sbr-return:${yt.id}:${netflixTabId}`;
