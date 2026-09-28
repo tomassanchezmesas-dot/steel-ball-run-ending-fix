@@ -1,14 +1,15 @@
 # Steel Ball Run Ending Fix 🐎
 
-A small, open-source Chrome extension that detects the ending of **JoJo's Bizarre Adventure: Steel Ball Run** on Netflix and temporarily plays the fan edit **"A Horse With No Name"** hosted on the Lil Blv YouTube channel.
+A small, open-source Chrome extension that detects the ending of **JoJo's Bizarre Adventure: Steel Ball Run** on Netflix and lets you choose between two Lil Blv fan edits: **"A Horse With No Name"** or **"California Dreamin'"**, then plays the selected ending automatically.
 
-> Current version: **v1.2.0**
+> Current version: **v1.3.0**
 
-[Download the latest source ZIP](https://github.com/tomassanchezmesas-dot/steel-ball-run-ending-fix/archive/refs/heads/main.zip) · [Watch the alternate ending](https://www.youtube.com/watch?v=oMiX8tZqswI)
+[Download the latest source ZIP](https://github.com/tomassanchezmesas-dot/steel-ball-run-ending-fix/archive/refs/heads/main.zip) · [A Horse With No Name](https://www.youtube.com/watch?v=oMiX8tZqswI) · [California Dreamin'](https://www.youtube.com/watch?v=j7J4IrIYQvY)
 
 ## What it does
 
 - Detects Steel Ball Run on Netflix.
+- Lets you choose between **A Horse With No Name** and **California Dreamin'** from the extension popup.
 - Can detect the ending by **time remaining**, so it does not depend on Netflix showing a "Skip Credits" button.
 - Includes one-click calibration: press the calibration button when the official ending starts and the extension remembers that timing.
 - Pauses Netflix and plays the alternate YouTube ending in an overlay.
@@ -53,6 +54,12 @@ No analytics, telemetry, tracking, ads, or external analytics services are inclu
 
 The extension only uses the permissions required for its local behaviour on Netflix/YouTube. See [PRIVACY.md](PRIVACY.md) for details.
 
+## v1.3.0
+
+- Added an ending selector with **A Horse With No Name** and **California Dreamin'**.
+- The selected ending is used in overlay, new-tab and redirect modes.
+- The choice is remembered through Chrome sync storage.
+
 ## v1.2.0
 
 - Fixed the YouTube **Error 153** problem in overlay mode by embedding YouTube directly in the HTTPS Netflix page context.
@@ -66,7 +73,7 @@ See [CHANGELOG.md](CHANGELOG.md).
 
 ## Español 🇨🇱
 
-**Steel Ball Run Ending Fix** detecta cuándo comienza el ending de Steel Ball Run en Netflix y reproduce temporalmente el edit alternativo de YouTube de Lil Blv con **"A Horse With No Name"**.
+**Steel Ball Run Ending Fix** detecta cuándo comienza el ending de Steel Ball Run en Netflix y te deja elegir entre los edits de Lil Blv **"A Horse With No Name"** y **"California Dreamin'"**, y reproduce automáticamente el que selecciones.
 
 ### Instalación rápida
 
@@ -86,7 +93,7 @@ La extensión **no rompe, descarga ni modifica el DRM de Netflix**. Sólo observ
 
 ## 한국어 🇰🇷
 
-**Steel Ball Run Ending Fix**는 Netflix에서 *Steel Ball Run* 엔딩이 시작되는 시점을 감지한 뒤, Lil Blv의 YouTube 대체 엔딩 영상을 재생하는 Chrome 확장 프로그램입니다.
+**Steel Ball Run Ending Fix**는 Netflix에서 *Steel Ball Run* 엔딩이 시작되는 시점을 감지한 뒤, Lil Blv의 YouTube 대체 엔딩 중 **A Horse With No Name** 또는 **California Dreamin'**을 선택해 재생하는 Chrome 확장 프로그램입니다.
 
 ### 설치
 
