@@ -1,5 +1,7 @@
 # Steel Ball Run Ending Fix 🐎
 
+#AI MADE
+
 A small, open-source Chrome extension that detects the ending of **JoJo's Bizarre Adventure: Steel Ball Run** on Netflix and lets you choose between two Lil Blv fan edits: **"A Horse With No Name"** or **"California Dreamin'"**, then plays the selected ending automatically.
 
 > Current version: **v1.3.0**
