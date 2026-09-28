@@ -10,8 +10,8 @@
   <header>
     <div class="horse">🐎</div>
     <div>
-      <h1>Steel Ball Run Ending Fix <span class="version">v1.2</span></h1>
-      <p>Netflix → A Horse With No Name</p>
+      <h1>Steel Ball Run Ending Fix <span class="version">v1.3</span></h1>
+      <p>Netflix → choose your alternate ending</p>
     </div>
   </header>
 
@@ -23,6 +23,22 @@
       </span>
       <input id="enabled" type="checkbox">
     </label>
+  </section>
+
+  <section class="card ending-picker">
+    <div class="cardtitle">🎵 Elige tu ending</div>
+    <p class="hint">Puedes cambiarlo cuando quieras. El elegido se usará en overlay, pestaña nueva y redirección.</p>
+    <div class="ending-grid">
+      <button id="endingHorse" class="ending-option" data-ending="horse" type="button">
+        <span class="ending-icon">🐎</span>
+        <span><strong>A Horse With No Name</strong><small>Lil Blv edit</small></span>
+      </button>
+      <button id="endingCalifornia" class="ending-option" data-ending="california" type="button">
+        <span class="ending-icon">🌴</span>
+        <span><strong>California Dreamin'</strong><small>Lil Blv edit</small></span>
+      </button>
+    </div>
+    <div id="endingSelected" class="ending-selected">Seleccionado: A Horse With No Name</div>
   </section>
 
   <section class="card calibration">
@@ -116,7 +132,7 @@
 
   <footer>
     <span id="saveState">Guardado automáticamente</span>
-    <a href="https://www.youtube.com/watch?v=oMiX8tZqswI" target="_blank">Abrir video ↗</a>
+    <a id="openSelected" href="https://www.youtube.com/watch?v=oMiX8tZqswI" target="_blank">Abrir ending ↗</a>
   </footer>
 
   <script src="popup.js"></script>
