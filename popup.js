@@ -1,3 +1,10 @@
+const ENDINGS = {
+  horse: {title: "A Horse With No Name", url: "https://www.youtube.com/watch?v=oMiX8tZqswI", emoji: "🐎"},
+  california: {title: "California Dreamin'", url: "https://www.youtube.com/watch?v=j7J4IrIYQvY", emoji: "🌴"}
+};
+
+let selectedEndingKey = "horse";
+
 const fields = [
   "enabled", "mode", "requireSeriesMatch", "triggerByCreditsButton",
   "triggerByRemainingTime", "secondsBeforeEnd", "delaySeconds",
@@ -6,7 +13,7 @@ const fields = [
 ];
 
 const defaults = {
-  enabled: true, mode: "overlay", requireSeriesMatch: true,
+  enabled: true, selectedEnding: "horse", mode: "overlay", requireSeriesMatch: true,
   triggerByCreditsButton: true, triggerByRemainingTime: true,
   secondsBeforeEnd: 110, delaySeconds: 0, autoResumeNetflix: true,
   skipOriginalEnding: true, autoCloseOverlay: true, autoCloseYouTubeTab: true,
@@ -31,8 +38,27 @@ function fmt(sec) {
   return `${m}:${s}`;
 }
 
+function setEndingUI(key) {
+  selectedEndingKey = ENDINGS[key] ? key : "horse";
+  document.querySelectorAll(".ending-option").forEach(btn => {
+    btn.classList.toggle("active", btn.dataset.ending === selectedEndingKey);
+  });
+  const ending = ENDINGS[selectedEndingKey];
+  $("endingSelected").textContent = `Seleccionado: ${ending.emoji} ${ending.title}`;
+  $("openSelected").href = ending.url;
+}
+
+async function selectEnding(key) {
+  setEndingUI(key);
+  await chrome.storage.sync.set({selectedEnding: selectedEndingKey});
+  $("saveState").textContent = `Ending: ${ENDINGS[selectedEndingKey].title}`;
+  setTimeout(() => $("saveState").textContent = "Guardado automáticamente", 1000);
+  setTimeout(refreshStatus, 120);
+}
+
 async function load() {
   const s = await chrome.storage.sync.get(defaults);
+  setEndingUI(s.selectedEnding);
   for (const id of fields) {
     const el = $(id);
     if (!el) continue;
@@ -59,6 +85,7 @@ async function save() {
     else if (el.type === "number") out[id] = Number(el.value);
     else out[id] = el.value;
   }
+  out.selectedEnding = selectedEndingKey;
   out.keywords = $("keywords").value.split("\n").map(x => x.trim()).filter(Boolean);
   await chrome.storage.sync.set(out);
   $("saveState").textContent = "Guardado automáticamente";
@@ -91,6 +118,7 @@ async function refreshStatus() {
       st.forcedForTab ? "Pestaña activada manualmente" : "Vigilando";
 
     const lines = [];
+    if (st.ending?.title) lines.push(`Ending: ${st.ending.emoji || "🎵"} ${st.ending.title}`);
     lines.push(`Serie: ${st.seriesMatch?.match ? "sí" : "no"}${st.seriesMatch?.source ? ` (${st.seriesMatch.source})` : ""}`);
     lines.push(`Botón créditos: ${st.creditsButton?.present ? "sí" : "no (no pasa nada; usamos tiempo)"}`);
     if (st.video) {
@@ -114,6 +142,9 @@ for (const id of fields) {
   el.addEventListener("input", scheduleSave);
 }
 $("keywords").addEventListener("input", scheduleSave);
+document.querySelectorAll(".ending-option").forEach(btn => {
+  btn.addEventListener("click", () => selectEnding(btn.dataset.ending));
+});
 
 $("force").addEventListener("click", () => {
   chrome.runtime.sendMessage({type: "SBR_POPUP_FORCE"}, (res) => {
