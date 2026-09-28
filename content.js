@@ -1,9 +1,30 @@
 (() => {
   "use strict";
 
-  const YOUTUBE_WATCH = "https://www.youtube.com/watch?v=oMiX8tZqswI";
+  const ENDINGS = {
+    horse: {
+      id: "oMiX8tZqswI",
+      title: "A Horse With No Name",
+      artist: "Lil Blv",
+      url: "https://www.youtube.com/watch?v=oMiX8tZqswI",
+      emoji: "🐎"
+    },
+    california: {
+      id: "j7J4IrIYQvY",
+      title: "California Dreamin'",
+      artist: "Lil Blv",
+      url: "https://www.youtube.com/watch?v=j7J4IrIYQvY",
+      emoji: "🌴"
+    }
+  };
+
+  function currentEnding() {
+    return ENDINGS[settings.selectedEnding] || ENDINGS.horse;
+  }
+
   const DEFAULTS = {
     enabled: true,
+    selectedEnding: "horse",
     mode: "overlay",
     requireSeriesMatch: true,
     triggerByCreditsButton: true,
@@ -270,7 +291,8 @@
 
     overlay = document.createElement("div");
     overlay.id = "sbr-ending-fix-overlay";
-    const ytEmbed = "https://www.youtube.com/embed/oMiX8tZqswI" +
+    const ending = currentEnding();
+    const ytEmbed = `https://www.youtube.com/embed/${ending.id}` +
       "?autoplay=1&rel=0&playsinline=1" +
       "&origin=" + encodeURIComponent("https://www.netflix.com") +
       "&widget_referrer=" + encodeURIComponent("https://www.netflix.com/");
@@ -286,25 +308,25 @@
         <div class="sbr-stage">
           <iframe id="sbr-player-frame"
             src="${ytEmbed}"
-            title="A Horse With No Name — Lil Blv"
+            title="${ending.title} — ${ending.artist}"
             referrerpolicy="strict-origin-when-cross-origin"
             allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
             allowfullscreen></iframe>
           <div class="sbr-fallback">
-            <div class="sbr-horse">🐎</div>
+            <div class="sbr-horse">${ending.emoji}</div>
             <div><strong>ENDING CORRECTED.</strong></div>
             <div class="sbr-small">El reproductor se carga directamente desde Netflix para enviar un Referer HTTP válido. Si no inicia, usa “YouTube ↗”.</div>
           </div>
         </div>
         <div class="sbr-bottom">
-          <div>A Horse With No Name — Lil Blv</div>
+          <div>${ending.emoji} ${ending.title} — ${ending.artist}</div>
           <div id="sbr-countdown"></div>
         </div>
       </div>`;
     document.documentElement.appendChild(overlay);
 
     overlay.querySelector("#sbr-close")?.addEventListener("click", () => closeOverlay(false));
-    overlay.querySelector("#sbr-open-youtube")?.addEventListener("click", () => window.open(YOUTUBE_WATCH, "_blank", "noopener,noreferrer"));
+    overlay.querySelector("#sbr-open-youtube")?.addEventListener("click", () => window.open(ending.url, "_blank", "noopener,noreferrer"));
 
     const endAfter = Math.max(15, Number(settings.endingDurationSeconds) || 91);
     const started = Date.now();
@@ -360,12 +382,13 @@
     pauseNetflix();
     toast("ENDING DETECTADO — corrigiendo…", 1200);
 
+    const ending = currentEnding();
     if (settings.mode === "redirect") {
-      location.href = YOUTUBE_WATCH;
+      location.href = ending.url;
       return;
     }
     if (settings.mode === "newtab") {
-      chrome.runtime.sendMessage({type: "SBR_OPEN_YOUTUBE_TAB"});
+      chrome.runtime.sendMessage({type: "SBR_OPEN_YOUTUBE_TAB", endingKey: settings.selectedEnding});
       return;
     }
     makeOverlay();
@@ -488,6 +511,8 @@
         ok: true,
         enabled: settings.enabled,
         mode: settings.mode,
+        selectedEnding: settings.selectedEnding,
+        ending: currentEnding(),
         forcedForTab,
         seriesLatched,
         triggered,
