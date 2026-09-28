@@ -1,0 +1,99 @@
+#sbr-ending-fix-toast {
+  position: fixed;
+  top: 22px;
+  left: 50%;
+  transform: translate(-50%, -16px);
+  z-index: 2147483647;
+  background: rgba(10,10,10,.94);
+  color: #fff;
+  border: 1px solid rgba(255,255,255,.18);
+  border-radius: 999px;
+  padding: 11px 18px;
+  font: 700 14px/1.2 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+  box-shadow: 0 12px 40px rgba(0,0,0,.45);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .18s ease, transform .18s ease;
+}
+#sbr-ending-fix-toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+#sbr-ending-fix-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2147483646;
+  background:
+    radial-gradient(circle at 50% 25%, rgba(120,50,20,.32), transparent 35%),
+    #050505;
+  color: white;
+  font-family: system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#sbr-ending-fix-overlay .sbr-shell {
+  width: min(96vw, 1500px);
+  height: min(94vh, 940px);
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  gap: 12px;
+}
+#sbr-ending-fix-overlay .sbr-topbar,
+#sbr-ending-fix-overlay .sbr-bottom {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  padding: 0 4px;
+}
+#sbr-ending-fix-overlay .sbr-brand {
+  font-weight:900;
+  letter-spacing:.07em;
+  font-size: clamp(13px,1.3vw,20px);
+}
+#sbr-ending-fix-overlay .sbr-actions { display:flex; gap:8px; }
+#sbr-ending-fix-overlay button {
+  appearance:none;
+  border:1px solid rgba(255,255,255,.22);
+  background:#161616;
+  color:#fff;
+  border-radius:10px;
+  padding:9px 13px;
+  font-weight:700;
+  cursor:pointer;
+}
+#sbr-ending-fix-overlay button:hover { background:#262626; }
+#sbr-ending-fix-overlay .sbr-stage {
+  position:relative;
+  width:100%;
+  min-height:0;
+  background:#000;
+  border-radius:16px;
+  overflow:hidden;
+  box-shadow: 0 22px 80px rgba(0,0,0,.6);
+  aspect-ratio: 16/9;
+  align-self:center;
+}
+#sbr-ending-fix-overlay iframe {
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  border:0;
+  z-index:2;
+  background:#000;
+}
+#sbr-ending-fix-overlay .sbr-fallback {
+  position:absolute;
+  inset:0;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  color:#eee;
+  z-index:1;
+}
+#sbr-ending-fix-overlay .sbr-horse { font-size:64px; }
+#sbr-ending-fix-overlay .sbr-small { opacity:.65; font-size:13px; max-width:520px; }
+#sbr-ending-fix-overlay .sbr-bottom { opacity:.78; font-size:13px; }

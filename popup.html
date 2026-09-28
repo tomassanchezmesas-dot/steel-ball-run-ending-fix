@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>SBR Ending Fix</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <header>
+    <div class="horse">🐎</div>
+    <div>
+      <h1>Steel Ball Run Ending Fix <span class="version">v1.2</span></h1>
+      <p>Netflix → A Horse With No Name</p>
+    </div>
+  </header>
+
+  <section class="card master">
+    <label class="switchrow">
+      <span>
+        <strong>Extensión activa</strong>
+        <small>Detecta el ending aunque NO exista “Omitir créditos” y corrige el Error 153 de YouTube en el overlay.</small>
+      </span>
+      <input id="enabled" type="checkbox">
+    </label>
+  </section>
+
+  <section class="card calibration">
+    <div class="cardtitle">🎯 Detección sin botón</div>
+    <p class="hint">Cuando comience el ending oficial, pulsa el botón rojo una sola vez. Guarda exactamente cuántos segundos quedaban y lo usará en los siguientes episodios.</p>
+    <button id="calibratePlay" class="primary full">Marcar inicio AHORA + reemplazar 🐎</button>
+    <button id="calibrateOnly" class="secondary full">Sólo guardar este momento</button>
+  </section>
+
+  <section class="card">
+    <label>
+      <span>Modo al detectar el ending</span>
+      <select id="mode">
+        <option value="overlay">Overlay sobre Netflix</option>
+        <option value="newtab">YouTube en pestaña nueva + volver</option>
+        <option value="redirect">Redirigir esta pestaña a YouTube</option>
+      </select>
+    </label>
+
+    <label class="switchrow compact">
+      <span>Exigir detectar Steel Ball Run</span>
+      <input id="requireSeriesMatch" type="checkbox">
+    </label>
+    <label class="switchrow compact">
+      <span>Usar botón “Omitir créditos” si existe</span>
+      <input id="triggerByCreditsButton" type="checkbox">
+    </label>
+    <label class="switchrow compact">
+      <span><b>Detectar por tiempo restante</b><small>Este es el método importante cuando Netflix no da botón.</small></span>
+      <input id="triggerByRemainingTime" type="checkbox">
+    </label>
+
+    <label>
+      <span>Activar cuando queden</span>
+      <div class="unit"><input id="secondsBeforeEnd" type="number" min="15" max="300" step="0.1"><b>s</b></div>
+    </label>
+
+    <label>
+      <span>Cuenta regresiva antes de cambiar</span>
+      <div class="unit"><input id="delaySeconds" type="number" min="0" max="10"><b>s</b></div>
+    </label>
+  </section>
+
+  <section class="card">
+    <label class="switchrow compact">
+      <span><b>Saltar el ending oficial al terminar</b><small>Evita que Netflix reproduzca el ending original después del alternativo.</small></span>
+      <input id="skipOriginalEnding" type="checkbox">
+    </label>
+    <label class="switchrow compact">
+      <span>Reanudar Netflix al terminar</span>
+      <input id="autoResumeNetflix" type="checkbox">
+    </label>
+    <label class="switchrow compact">
+      <span>Cerrar overlay automáticamente</span>
+      <input id="autoCloseOverlay" type="checkbox">
+    </label>
+    <label class="switchrow compact">
+      <span>Cerrar pestaña YouTube automáticamente</span>
+      <input id="autoCloseYouTubeTab" type="checkbox">
+    </label>
+    <label>
+      <span>Duración del ending alternativo</span>
+      <div class="unit"><input id="endingDurationSeconds" type="number" min="15" max="180"><b>s</b></div>
+    </label>
+  </section>
+
+  <section class="card status">
+    <div class="statusline"><span>Estado</span><strong id="statusText">Consultando…</strong></div>
+    <div id="statusDetails" class="details"></div>
+    <div class="meter"><div id="meterFill"></div></div>
+  </section>
+
+  <div class="buttons three">
+    <button id="arm" class="secondary">Activar pestaña</button>
+    <button id="refresh" class="secondary">↻ Estado</button>
+    <button id="force" class="primary">🐎 Probar ahora</button>
+  </div>
+
+  <details class="advanced">
+    <summary>Avanzado</summary>
+    <label class="switchrow compact">
+      <span>Mensajes de depuración</span>
+      <input id="debug" type="checkbox">
+    </label>
+    <label>
+      <span>Palabras para reconocer la serie</span>
+      <textarea id="keywords" rows="7"></textarea>
+      <small>Una por línea. Si Netflix no expone el título, usa “Activar pestaña”.</small>
+    </label>
+  </details>
+
+  <footer>
+    <span id="saveState">Guardado automáticamente</span>
+    <a href="https://www.youtube.com/watch?v=oMiX8tZqswI" target="_blank">Abrir video ↗</a>
+  </footer>
+
+  <script src="popup.js"></script>
+</body>
+</html>

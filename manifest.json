@@ -1,0 +1,60 @@
+{
+  "manifest_version": 3,
+  "name": "Steel Ball Run Ending Fix",
+  "version": "1.2.0",
+  "description": "Reemplaza el ending de Steel Ball Run en Netflix por un edit alternativo de YouTube. Detecta por tiempo/calibración y usa un embed compatible con Referer.",
+  "permissions": [
+    "storage",
+    "tabs",
+    "alarms",
+    "contextMenus"
+  ],
+  "host_permissions": [
+    "https://www.netflix.com/*",
+    "https://www.youtube.com/*",
+    "https://www.youtube-nocookie.com/*",
+    "https://youtu.be/*"
+  ],
+  "action": {
+    "default_title": "Steel Ball Run Ending Fix",
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png",
+      "48": "icons/icon48.png"
+    }
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://www.netflix.com/watch/*"
+      ],
+      "js": [
+        "content.js"
+      ],
+      "css": [
+        "content.css"
+      ],
+      "run_at": "document_idle"
+    }
+  ],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'; frame-src https://www.youtube.com https://www.youtube-nocookie.com;"
+  },
+  "commands": {
+    "force-ending": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+E"
+      },
+      "description": "Reproducir ahora el ending alternativo"
+    }
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png"
+  }
+}
