@@ -2,6 +2,15 @@
 
 All notable changes to Steel Ball Run Ending Fix are documented here.
 
+## [1.3.0] - 2026-09-28
+
+### Added
+- Ending picker in the extension popup.
+- **A Horse With No Name** (YouTube: `oMiX8tZqswI`).
+- **California Dreamin'** (YouTube: `j7J4IrIYQvY`).
+- The selected ending is remembered through Chrome sync storage.
+- The choice applies to overlay, new-tab and redirect modes.
+
 ## [1.2.0] - 2026-09-28
 
 ### Fixed
