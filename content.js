@@ -1,5 +1,7 @@
 (() => {
   "use strict";
+  if (window.__SBR_ENDING_FIX_V14__) return;
+  window.__SBR_ENDING_FIX_V14__=true;
 
   const ENDINGS = {
     horse: {
@@ -24,6 +26,8 @@
 
   const DEFAULTS = {
     enabled: true,
+    siteThresholds: {},
+    showFloatingButton: true,
     selectedEnding: "horse",
     mode: "overlay",
     requireSeriesMatch: true,
@@ -61,6 +65,9 @@
 
   let settings = {...DEFAULTS};
   let forcedForTab = false;
+  let siteDisabled = false;
+  let floating = null;
+  const isNetflix = location.hostname === "netflix.com" || location.hostname.endsWith(".netflix.com");
   let seriesLatched = false;
   let seriesLatchSource = "";
   let triggered = false;
@@ -73,6 +80,32 @@
   let countdownTimer = null;
   let videoListenerBoundTo = null;
   let triggerSnapshot = null;
+
+
+  function activeThreshold() {
+    const special = settings.siteThresholds && settings.siteThresholds[location.origin];
+    return Math.max(15, Number(special ?? settings.secondsBeforeEnd) || 110);
+  }
+
+  function updateFloating() {
+    if (isNetflix || siteDisabled || !settings.enabled || !settings.showFloatingButton) {
+      if (floating) floating.remove();
+      floating=null;
+      return;
+    }
+    if (!floating) {
+      floating=document.createElement("div");
+      floating.id="sbr-floating-control";
+      floating.innerHTML='<button id="sbr-floating-play" title="Play selected ending now">🐎 Play ending</button><button id="sbr-floating-arm" title="Arm automatic detection">◎</button>';
+      document.documentElement.appendChild(floating);
+      floating.querySelector("#sbr-floating-play").addEventListener("click", () => triggerEnding("manual"));
+      floating.querySelector("#sbr-floating-arm").addEventListener("click", () => {
+        forcedForTab=true;
+        toast("Detection armed for this tab");
+      });
+    }
+    floating.querySelector("#sbr-floating-play").textContent=currentEnding().emoji+" "+currentEnding().title;
+  }
 
   const log = (...args) => {
     if (settings.debug) console.log("[SBR Ending Fix]", ...args);
@@ -95,10 +128,21 @@
     if (area !== "sync") return;
     for (const [k, v] of Object.entries(changes)) settings[k] = v.newValue;
     if (settings.debug) toast("Configuración actualizada", 1400);
+    updateFloating();
   });
 
+  function findVideos(root, depth=0) {
+    if (!root || depth>4) return [];
+    const videos=[...root.querySelectorAll("video")];
+    if (videos.length) return videos;
+    for(const el of root.querySelectorAll("*")) {
+      if (el.shadowRoot) videos.push(...findVideos(el.shadowRoot,depth+1));
+    }
+    return videos;
+  }
+
   function getVideo() {
-    const vids = [...document.querySelectorAll("video")];
+    const vids = findVideos(document);
     if (!vids.length) return null;
     vids.sort((a, b) => {
       const aScore = (a.clientWidth * a.clientHeight) + (a.readyState > 0 ? 1e9 : 0);
@@ -194,12 +238,12 @@
   function remainingTimeMatch(video) {
     const t = videoTiming(video);
     if (!t || t.duration < 300 || t.remaining <= 0) return null;
-    const threshold = Math.max(15, Number(settings.secondsBeforeEnd) || 110);
+    const threshold = activeThreshold();
     return {match: t.remaining <= threshold, threshold, ...t};
   }
 
   function shouldAllowTrigger() {
-    if (!settings.enabled) {
+    if (!settings.enabled || siteDisabled) {
       lastReason = "Extensión desactivada";
       return false;
     }
@@ -294,8 +338,8 @@
     const ending = currentEnding();
     const ytEmbed = `https://www.youtube.com/embed/${ending.id}` +
       "?autoplay=1&rel=0&playsinline=1" +
-      "&origin=" + encodeURIComponent("https://www.netflix.com") +
-      "&widget_referrer=" + encodeURIComponent("https://www.netflix.com/");
+      "&origin=" + encodeURIComponent(location.origin) +
+      "&widget_referrer=" + encodeURIComponent(location.href);
     overlay.innerHTML = `
       <div class="sbr-shell" role="dialog" aria-modal="true" aria-label="Steel Ball Run Ending Fix">
         <div class="sbr-topbar">
@@ -360,7 +404,7 @@
   }
 
   async function triggerEnding(source = "manual") {
-    if (triggered || triggerInProgress) return;
+    if (siteDisabled || !settings.enabled || triggered || triggerInProgress) return;
     triggerInProgress = true;
 
     const v = getVideo();
@@ -444,8 +488,9 @@
       return {ok: false, error: "timing-unavailable"};
     }
     const calibrated = Math.max(15, Math.min(300, Math.round(timing.remaining * 10) / 10));
-    await chrome.storage.sync.set({secondsBeforeEnd: calibrated, triggerByRemainingTime: true});
-    settings.secondsBeforeEnd = calibrated;
+    const siteThresholds = {...(settings.siteThresholds || {}), [location.origin]: calibrated};
+    await chrome.storage.sync.set({siteThresholds, triggerByRemainingTime: true});
+    settings.siteThresholds = siteThresholds;
     settings.triggerByRemainingTime = true;
     forcedForTab = true;
     triggered = false;
@@ -458,12 +503,14 @@
     await loadSettings();
     observer.observe(document.documentElement, {childList: true, subtree: true, attributes: true, attributeFilter: ["aria-label", "data-uia", "class"]});
     bindVideoEvents();
+    updateFloating();
     setInterval(() => {
       if (location.pathname !== lastPath) {
         lastPath = location.pathname;
         resetForNavigation();
       }
       bindVideoEvents();
+      updateFloating();
       if (!triggered) evaluate("interval");
     }, 1000);
 
@@ -477,6 +524,20 @@
 
   chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     if (!msg?.type) return;
+
+    if (msg.type === "SBR_DISABLE_SITE") {
+      siteDisabled=true;
+      if (floating) floating.remove();
+      floating=null;
+      sendResponse({ok:true});
+      return;
+    }
+    if (msg.type === "SBR_ENABLE_SITE") {
+      siteDisabled=false;
+      updateFloating();
+      sendResponse({ok:true});
+      return;
+    }
 
     if (msg.type === "SBR_FORCE_ENDING") {
       triggerEnding("manual");
@@ -520,7 +581,10 @@
         seriesMatch: sm,
         creditsButton: cr,
         video: timing,
-        threshold: Math.max(15, Number(settings.secondsBeforeEnd) || 110),
+        threshold: activeThreshold(),
+        siteDisabled,
+        site: location.origin,
+        isNetflix,
         lastReason,
         triggerSnapshot
       });

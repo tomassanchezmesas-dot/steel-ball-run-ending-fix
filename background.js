@@ -17,6 +17,8 @@ function getEnding(key) {
 
 const DEFAULTS = {
   enabled: true,
+  siteThresholds: {},
+  showFloatingButton: true,
   selectedEnding: "horse",
   mode: "overlay",
   requireSeriesMatch: true,
@@ -41,6 +43,46 @@ const DEFAULTS = {
   ]
 };
 
+
+function getSitePattern(url) {
+  try {
+    const u = new URL(url);
+    if (u.protocol !== "https:" && u.protocol !== "http:") return null;
+    return u.protocol + "//" + u.hostname + "/*";
+  } catch { return null; }
+}
+function scriptId(pattern) {
+  return "sbr-site-" + pattern.replace(/[^a-z0-9]/gi, "-").slice(0, 180);
+}
+async function registerSite(pattern) {
+  if (!pattern || (!pattern.startsWith("https://") && !pattern.startsWith("http://")) || !pattern.endsWith("/*")) {
+    return {ok:false, error:"Invalid site"};
+  }
+  if (!(await chrome.permissions.contains({origins:[pattern]}))) {
+    return {ok:false,error:"Site permission not granted"};
+  }
+  const id=scriptId(pattern);
+  const existing=await chrome.scripting.getRegisteredContentScripts({ids:[id]});
+  if (existing.length) await chrome.scripting.unregisterContentScripts({ids:[id]});
+  await chrome.scripting.registerContentScripts([{
+    id, matches:[pattern], js:["content.js"], css:["content.css"],
+    runAt:"document_idle", persistAcrossSessions:true
+  }]);
+  return {ok:true};
+}
+async function unregisterSite(pattern) {
+  if (!pattern) return {ok:false};
+  const id=scriptId(pattern);
+  const existing=await chrome.scripting.getRegisteredContentScripts({ids:[id]});
+  if (existing.length) await chrome.scripting.unregisterContentScripts({ids:[id]});
+  return {ok:true};
+}
+chrome.permissions.onRemoved.addListener(async permission => {
+  for (const pattern of permission.origins || []) {
+    try {await unregisterSite(pattern);} catch (error) { console.warn("SBR permissions:", error); }
+  }
+});
+
 chrome.runtime.onInstalled.addListener(async () => {
   const current = await chrome.storage.sync.get(null);
   const merged = {...DEFAULTS, ...current};
@@ -51,6 +93,7 @@ chrome.runtime.onInstalled.addListener(async () => {
   merged.embedRefererV12Migrated = true;
   if (!ENDINGS[merged.selectedEnding]) merged.selectedEnding = "horse";
   merged.endingChooserV13Migrated = true;
+  if (!merged.siteThresholds || typeof merged.siteThresholds !== "object") merged.siteThresholds = {};
   if (current.skipOriginalEnding == null) merged.skipOriginalEnding = true;
   await chrome.storage.sync.set(merged);
 
@@ -59,19 +102,19 @@ chrome.runtime.onInstalled.addListener(async () => {
       id: "sbr-force-ending",
       title: "🐎 Reproducir ending alternativo ahora",
       contexts: ["page"],
-      documentUrlPatterns: ["https://www.netflix.com/watch/*"]
+
     });
     chrome.contextMenus.create({
       id: "sbr-calibrate-ending",
       title: "🎯 Marcar ESTE momento como inicio del ending",
       contexts: ["page"],
-      documentUrlPatterns: ["https://www.netflix.com/watch/*"]
+
     });
     chrome.contextMenus.create({
       id: "sbr-arm-tab",
       title: "🐎 Activar detección por tiempo en esta pestaña",
       contexts: ["page"],
-      documentUrlPatterns: ["https://www.netflix.com/watch/*"]
+
     });
   });
 });
@@ -100,6 +143,26 @@ chrome.commands.onCommand.addListener(async (command) => {
 
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   if (!msg?.type) return;
+
+
+  if (msg.type === "SBR_REGISTER_SITE" || msg.type === "SBR_UNREGISTER_SITE") {
+    const method=msg.type==="SBR_REGISTER_SITE" ? registerSite : unregisterSite;
+    method(msg.pattern).then(sendResponse, error=>sendResponse({ok:false,error:String(error)}));
+    return true;
+  }
+  if (msg.type === "SBR_INJECT_TAB") {
+    (async () => {
+      const tab=await chrome.tabs.get(msg.tabId);
+      const pattern=getSitePattern(tab.url);
+      if (!pattern || pattern!==msg.pattern) return {ok:false,error:"Tab location changed"};
+      if (!(await chrome.permissions.contains({origins:[pattern]}))) return {ok:false,error:"Permission not granted"};
+      await chrome.scripting.insertCSS({target:{tabId:tab.id},files:["content.css"]});
+      await chrome.scripting.executeScript({target:{tabId:tab.id},files:["content.js"]});
+      await sendToTab(tab.id,{type:"SBR_ENABLE_SITE"});
+      return {ok:true};
+    })().then(sendResponse,error=>sendResponse({ok:false,error:String(error)}));
+    return true;
+  }
 
   if (msg.type === "SBR_OPEN_YOUTUBE_TAB") {
     (async () => {

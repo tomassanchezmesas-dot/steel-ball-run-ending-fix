@@ -103,3 +103,6 @@ a { color:#fff; }
   color:#bbb;
   text-align:center;
 }
+
+#sitePermissionPanel {background:linear-gradient(140deg,#172229,#141414);border-color:#344958;}
+#sitePermissionPanel [hidden] {display:none!important;}

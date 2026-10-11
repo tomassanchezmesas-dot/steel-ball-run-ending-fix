@@ -10,8 +10,8 @@
   <header>
     <div class="horse">🐎</div>
     <div>
-      <h1>Steel Ball Run Ending Fix <span class="version">v1.3</span></h1>
-      <p>Netflix → choose your alternate ending</p>
+      <h1>Steel Ball Run Ending Fix <span class="version">v1.4</span></h1>
+      <p>Netflix + other video websites</p>
     </div>
   </header>
 
@@ -23,6 +23,15 @@
       </span>
       <input id="enabled" type="checkbox">
     </label>
+  </section>
+
+  <section class="card" id="sitePermissionPanel">
+    <div class="cardtitle">🌐 Works beyond Netflix</div>
+    <p id="siteDomain" class="hint">Checking this tab…</p>
+    <p id="sitePermissionStatus" class="hint">Enable this site individually to use the extension here.</p>
+    <button id="enableSite" class="primary full" type="button">Enable on this website</button>
+    <button id="disableSite" class="secondary full" type="button" hidden>Disable on this website</button>
+    <p class="hint">Use "Arm this tab" if the title is hidden. If the player time cannot be read, choose "Play now".</p>
   </section>
 
   <section class="card ending-picker">
@@ -43,9 +52,9 @@
 
   <section class="card calibration">
     <div class="cardtitle">🎯 Detección sin botón</div>
-    <p class="hint">Cuando comience el ending oficial, pulsa el botón rojo una sola vez. Guarda exactamente cuántos segundos quedaban y lo usará en los siguientes episodios.</p>
-    <button id="calibratePlay" class="primary full">Marcar inicio AHORA + reemplazar 🐎</button>
-    <button id="calibrateOnly" class="secondary full">Sólo guardar este momento</button>
+    <p class="hint">Cuando empiece el ending, calibra los segundos restantes para este sitio. Si el reproductor está oculto en un iframe, usa el botón manual.</p>
+    <button id="calibratePlay" class="primary full">Calibrar este sitio + reproducir 🐎</button>
+    <button id="calibrateOnly" class="secondary full">Guardar tiempo para este sitio</button>
   </section>
 
   <section class="card">
@@ -105,6 +114,10 @@
     </label>
   </section>
 
+  <section class="card">
+    <label class="switchrow compact"><span>Mostrar botón flotante en sitios habilitados</span><input id="showFloatingButton" type="checkbox"></label>
+  </section>
+
   <section class="card status">
     <div class="statusline"><span>Estado</span><strong id="statusText">Consultando…</strong></div>
     <div id="statusDetails" class="details"></div>
@@ -112,9 +125,9 @@
   </section>
 
   <div class="buttons three">
-    <button id="arm" class="secondary">Activar pestaña</button>
+    <button id="arm" class="secondary">Armar pestaña</button>
     <button id="refresh" class="secondary">↻ Estado</button>
-    <button id="force" class="primary">🐎 Probar ahora</button>
+    <button id="force" class="primary">🐎 Reproducir ahora</button>
   </div>
 
   <details class="advanced">

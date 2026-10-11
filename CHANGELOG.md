@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.4.0] - 2026-10-11
+
+### Added
+- Support for arbitrary HTTP(S) websites enabled on a per-site opt-in basis.
+- Optional site permissions and persistent, dynamically registered content scripts.
+- Popup controls to enable or disable the current site.
+- Floating manual replacement button on approved non-Netflix sites.
+- Separate ending calibration thresholds for different websites.
+- Dynamic YouTube overlay referrer parameters for the current site.
+
+### Notes
+- Automatic video timing is only possible when an accessible HTML5 video element is exposed.
+- Cross-origin embedded or closed players may require manual playback.
+- No automatic access to other websites is granted.
+
 All notable changes to Steel Ball Run Ending Fix are documented here.
 
 ## [1.3.0] - 2026-09-28

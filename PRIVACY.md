@@ -1,35 +1,13 @@
-# Privacy Policy
+# Privacy
 
-**Steel Ball Run Ending Fix does not collect, transmit, sell, or share personal data.**
+**Steel Ball Run Ending Fix does not collect, sell, transmit, or store your browsing history or credentials.**
 
-## Data stored
+Netflix access is included to support the original feature. For **other websites**, the extension asks for permission only when you choose **Enable on this website**. You may revoke a site's permission in the popup.
 
-The extension stores only its own configuration values using Chrome's extension storage, such as:
+The extension checks page titles, visible credit controls and accessible local video playback timing to determine whether to trigger an alternate ending. These values are not sent to the developer. Settings (including your chosen ending and per-site timing thresholds) are stored in Chrome sync storage.
 
-- enabled/disabled state;
-- selected playback mode;
-- ending calibration timing;
-- automatic-return options;
-- custom series-detection keywords;
-- debug preference.
+The extension has no telemetry server, analytics SDK or advertisements. When it embeds or opens YouTube videos, Google/YouTube privacy policies apply. Websites you visit may also have their own privacy policies.
 
-These settings are used only to operate the extension.
+The extension does not download episodes, decrypt DRM, bypass access controls or redistribute music or video.
 
-## Network access
-
-The extension is designed to interact with:
-
-- `netflix.com`, to detect local playback state and display the overlay;
-- `youtube.com` / `youtube-nocookie.com` / `youtu.be`, to play or open the configured alternate ending.
-
-The extension does not operate its own analytics server and contains no advertising or telemetry SDK.
-
-When YouTube is loaded, YouTube/Google may process requests according to their own privacy policies. Netflix likewise handles the user's Netflix session independently of this extension.
-
-## Netflix content
-
-The extension does not decrypt, capture, download, copy, or redistribute Netflix video streams or DRM-protected media.
-
-## Contact / issues
-
-For bugs or privacy questions, open an issue in this GitHub repository.
+For bug reports, please open an issue in the GitHub repository.

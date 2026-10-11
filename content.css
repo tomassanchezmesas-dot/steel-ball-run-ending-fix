@@ -97,3 +97,14 @@
 #sbr-ending-fix-overlay .sbr-horse { font-size:64px; }
 #sbr-ending-fix-overlay .sbr-small { opacity:.65; font-size:13px; max-width:520px; }
 #sbr-ending-fix-overlay .sbr-bottom { opacity:.78; font-size:13px; }
+
+#sbr-floating-control {
+  position:fixed;right:18px;bottom:18px;z-index:2147483645;
+  display:flex;gap:6px;padding:5px;border:1px solid #59453c;border-radius:12px;
+  background:rgba(15,15,15,.95);box-shadow:0 8px 28px rgba(0,0,0,.5);
+}
+#sbr-floating-control button {
+  font:700 12px system-ui,sans-serif;color:#fff;background:#30242a;
+  border:1px solid #70505d;border-radius:8px;padding:9px 11px;cursor:pointer;
+}
+#sbr-floating-control button:hover {background:#553944;}

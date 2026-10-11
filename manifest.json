@@ -1,19 +1,18 @@
 {
   "manifest_version": 3,
   "name": "Steel Ball Run Ending Fix",
-  "version": "1.3.0",
-  "description": "Reemplaza el ending de Steel Ball Run en Netflix y te deja elegir entre A Horse With No Name o California Dreamin' de Lil Blv.",
+  "version": "1.4.0",
+  "description": "Choose a Steel Ball Run alternate ending on Netflix and on other video sites enabled by you.",
   "permissions": [
     "storage",
     "tabs",
     "alarms",
-    "contextMenus"
+    "contextMenus",
+    "scripting",
+    "activeTab"
   ],
   "host_permissions": [
-    "https://www.netflix.com/*",
-    "https://www.youtube.com/*",
-    "https://www.youtube-nocookie.com/*",
-    "https://youtu.be/*"
+    "https://www.netflix.com/*"
   ],
   "action": {
     "default_title": "Steel Ball Run Ending Fix",
@@ -56,5 +55,9 @@
     "16": "icons/icon16.png",
     "32": "icons/icon32.png",
     "48": "icons/icon48.png"
-  }
+  },
+  "optional_host_permissions": [
+    "https://*/*",
+    "http://*/*"
+  ]
 }
